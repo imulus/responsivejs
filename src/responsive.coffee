@@ -3,8 +3,12 @@ class window._R_
     @stops = {}
   
   is: (stop) ->
-    mq = @window.matchMedia(@stops[stop])
-    mq.matches
+    stop = @stops[stop]
+    if stop?
+      query = @window.matchMedia(stop)
+      query.matches
+    else
+      false
 
   isnt: (stop)-> !@is(stop)
 

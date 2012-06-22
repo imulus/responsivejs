@@ -22,8 +22,12 @@
 (function() {
 
   describe('R', function() {
-    var win;
+    var resize, win;
     win = null;
+    resize = function(width, done, callback) {
+      win.resizeTo("" + width, "600");
+      return wait(300, done, callback);
+    };
     before(function() {
       win = window.open('/responsive');
       win.R = new _R_(win);
@@ -44,29 +48,35 @@
     });
     context('is', function() {
       it("returns true when browser is in the bounds of a stop", function(done) {
-        win.resizeTo('400');
-        return wait(50, done, function() {
+        return resize(400, done, function() {
           return win.R.is('mobile').should.equal(true);
         });
       });
-      return it("returns false when browser is not in the bounds of a stop", function(done) {
-        win.resizeTo('600');
-        return wait(50, done, function() {
+      it("returns false when browser is not in the bounds of a stop", function(done) {
+        return resize(600, done, function() {
           return win.R.is('mobile').should.equal(false);
+        });
+      });
+      return it("returns false when fed an unknown stop", function(done) {
+        return resize(400, done, function() {
+          return win.R.is('wat').should.equal(false);
         });
       });
     });
     return context('isnt', function() {
       it("returns true when browser is not in the bounds of a stop", function(done) {
-        win.resizeTo('400');
-        return wait(50, done, function() {
+        return resize(400, done, function() {
           return win.R.isnt('tablet').should.equal(true);
         });
       });
-      return it("returns false when browser is in the bounds of a stop", function(done) {
-        win.resizeTo('600');
-        return wait(50, done, function() {
+      it("returns false when browser is in the bounds of a stop", function(done) {
+        return resize(700, done, function() {
           return win.R.isnt('tablet').should.equal(false);
+        });
+      });
+      return it("returns true when fed an unknown stop", function(done) {
+        return resize(400, done, function() {
+          return win.R.isnt('wat').should.equal(true);
         });
       });
     });

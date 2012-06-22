@@ -1,6 +1,10 @@
 describe 'R', ->
   win = null
 
+  resize = (width, done, callback) ->
+    win.resizeTo "#{width}", "600"
+    wait 300, done, callback
+
   before -> 
     win = window.open('/responsive')
     win.R = new _R_(win)
@@ -19,23 +23,30 @@ describe 'R', ->
 
   context 'is', ->
     it "returns true when browser is in the bounds of a stop", (done) ->
-      win.resizeTo '400'
-      wait 50, done, ->
+      resize 400, done, ->
         win.R.is('mobile').should.equal true
-        
+
     it "returns false when browser is not in the bounds of a stop", (done) ->
-      win.resizeTo '600'
-      wait 50, done, ->
+      resize 600, done, ->
         win.R.is('mobile').should.equal false
+        
+    it "returns false when fed an unknown stop", (done) ->
+      resize 400, done, ->
+        win.R.is('wat').should.equal false        
 
 
   context 'isnt', ->
     it "returns true when browser is not in the bounds of a stop", (done) ->
-      win.resizeTo '400'
-      wait 50, done, ->
+      resize 400, done, ->
         win.R.isnt('tablet').should.equal true
-
+  
     it "returns false when browser is in the bounds of a stop", (done) ->
-      win.resizeTo '600'
-      wait 50, done, ->
+      resize 700, done, ->
         win.R.isnt('tablet').should.equal false
+
+    it "returns true when fed an unknown stop", (done) ->
+      resize 400, done, ->
+        win.R.isnt('wat').should.equal true
+
+
+      
