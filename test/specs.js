@@ -30,20 +30,22 @@
     };
     before(function() {
       win = window.open('/responsive');
-      win.R = new _R_(win);
-      return win.R.stops = {
-        desktop: '(min-width: 980px)',
-        tablet: '(min-width: 480px) and (max-width: 979px)',
-        mobile: '(max-width: 480px)'
-      };
+      return win.R = new _R_(win);
     });
     after(function() {
       win.close();
       return win = null;
     });
     context('stops', function() {
-      return it('can be set', function() {
-        return win.R.stops.should.be.an('object');
+      return it('sets the media queries stops', function(done) {
+        win.R.stops({
+          desktop: '(min-width: 980px)',
+          tablet: '(min-width: 480px) and (max-width: 979px)',
+          mobile: '(max-width: 480px)'
+        });
+        return resize(400, done, function() {
+          return win.R.current.should.equal('mobile');
+        });
       });
     });
     context('is', function() {

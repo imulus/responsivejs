@@ -1,4 +1,4 @@
-	R.stops =
+	R.stops
 		desktop : '(min-width: 980px)'
 		tablet	: '(min-width: 480px) and (max-width: 979px)'
 		mobile	: '(max-width: 480px)'
@@ -21,10 +21,8 @@
 
 
 	$('.logo').click 
-		R.when 'mobile', ->
+		R.when ['mobile','tablet'], ->
 			 do something
-		 .when 'tablet', ->
-			 do something_else
 		 .when 'desktop', ->
 		 	 do another_thing		 
 

@@ -1,16 +1,23 @@
 class window._R_
   constructor: (@window = window)->
-    @stops = {}
+    @_stops = {}
+    @current = 'unknown'
+    @window.onresize = => do @update
   
-  is: (stop) ->
-    stop = @stops[stop]
-    if stop?
-      query = @window.matchMedia(stop)
-      query.matches
-    else
-      false
+  stops: (stops) -> 
+    @_stops = stops
+    do @update
+  
+  update : ->
+    for stop, media_query of @_stops
+      query = @window.matchMedia(media_query)
+      @current = stop if query.matches
 
-  isnt: (stop)-> !@is(stop)
+  is: (stop) -> 
+    @current is stop
+
+  isnt: (stop) -> 
+    !@is(stop)
 
     
 window.R = new _R_(window)
