@@ -16,7 +16,7 @@
 	R.from 'desktop', (into) ->
 		console.log "I am a function that runs when the browser goes from desktop into #{into}"
 	
-	R.change (from, into) ->
+	R.change (into, from) ->
 		console.log "I am a function that executes when the browser goes from desktop into #{into}"	
 
 

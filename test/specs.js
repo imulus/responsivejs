@@ -26,6 +26,12 @@
     win = null;
     resize = function(width, done, callback) {
       win.resizeTo("" + width, "600");
+      if (!(done != null)) {
+        return;
+      } else if ((done != null) && !(callback != null)) {
+        callback = done;
+        done = function() {};
+      }
       return wait(300, done, callback);
     };
     before(function() {
@@ -65,7 +71,7 @@
         });
       });
     });
-    return context('isnt', function() {
+    context('isnt', function() {
       it("returns true when browser is not in the bounds of a stop", function(done) {
         return resize(400, done, function() {
           return win.R.isnt('tablet').should.equal(true);
@@ -79,6 +85,41 @@
       return it("returns true when fed an unknown stop", function(done) {
         return resize(400, done, function() {
           return win.R.isnt('wat').should.equal(true);
+        });
+      });
+    });
+    return context('change', function() {
+      before(function() {
+        return win.R.stops({
+          desktop: '(min-width: 980px)',
+          tablet: '(min-width: 480px) and (max-width: 979px)',
+          mobile: '(max-width: 480px)'
+        });
+      });
+      it("triggers a callback when the browser changes from one stop to another", function(done) {
+        var callback;
+        callback = function() {
+          return callback.executed = true;
+        };
+        win.R.change(callback);
+        return resize(1000, function() {
+          return resize(700, done, function() {
+            return callback.executed.should.equal(true);
+          });
+        });
+      });
+      return it("passes the stop it came from and the stop it went into", function(done) {
+        var callback;
+        callback = function(into, from) {
+          callback.into = into;
+          return callback.from = from;
+        };
+        win.R.change(callback);
+        return resize(700, function() {
+          return resize(300, done, function() {
+            callback.into.should.equal("mobile");
+            return callback.from.should.equal("tablet");
+          });
         });
       });
     });
