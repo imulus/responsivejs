@@ -25,6 +25,8 @@ class window._R_
     !@is(stop)
 
   change: (callback) ->
+    if typeof callback isnt 'function'
+      throw new TypeError "[R.change(callback)] callback must be a function"
     @change_callbacks.push callback  
         
   propagate_change_callbacks = (into, from)->

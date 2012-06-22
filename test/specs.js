@@ -108,7 +108,7 @@
           });
         });
       });
-      return it("passes the stop it came from and the stop it went into", function(done) {
+      it("passes the stop it came from and the stop it went into", function(done) {
         var callback;
         callback = function(into, from) {
           callback.into = into;
@@ -121,6 +121,14 @@
             return callback.from.should.equal("tablet");
           });
         });
+      });
+      return it("throws an error when the callback isn't a function", function() {
+        (function() {
+          return win.R.change("wat");
+        }).should["throw"]();
+        return (function() {
+          return win.R.change();
+        }).should["throw"]();
       });
     });
   });
