@@ -32,17 +32,18 @@
         callback = done;
         done = function() {};
       }
-      return wait(300, done, callback);
+      return wait(70, done, callback);
     };
-    before(function() {
+    before(function(done) {
       win = window.open('/responsive');
-      return win.R = new _R_(win);
+      win.R = new _R_(win);
+      return wait(500, done, function() {});
     });
     after(function() {
       win.close();
       return win = null;
     });
-    context('stops', function() {
+    context(".stops({stops})", function() {
       return it('sets the media queries stops', function(done) {
         win.R.stops({
           desktop: '(min-width: 980px)',
@@ -54,7 +55,7 @@
         });
       });
     });
-    context('is', function() {
+    context(".is('stop')", function() {
       it("returns true when browser is in the bounds of a stop", function(done) {
         return resize(400, done, function() {
           return win.R.is('mobile').should.equal(true);
@@ -71,7 +72,7 @@
         });
       });
     });
-    context('isnt', function() {
+    context(".isnt('stop')", function() {
       it("returns true when browser is not in the bounds of a stop", function(done) {
         return resize(400, done, function() {
           return win.R.isnt('tablet').should.equal(true);
@@ -88,7 +89,7 @@
         });
       });
     });
-    return context('change', function() {
+    context(".change(fn callback(into, from))", function() {
       before(function() {
         return win.R.stops({
           desktop: '(min-width: 980px)',
@@ -128,6 +129,88 @@
         }).should["throw"]();
         return (function() {
           return win.R.change();
+        }).should["throw"]();
+      });
+    });
+    context(".from('stop', fn callback(into))", function() {
+      before(function() {
+        return win.R.stops({
+          desktop: '(min-width: 980px)',
+          tablet: '(min-width: 480px) and (max-width: 979px)',
+          mobile: '(max-width: 480px)'
+        });
+      });
+      it("triggers a callback when the browser changes out of a specified stop", function(done) {
+        var callback;
+        callback = function() {
+          return callback.executed = true;
+        };
+        win.R.from('desktop', callback);
+        return resize(1000, function() {
+          return resize(700, done, function() {
+            return callback.executed.should.equal(true);
+          });
+        });
+      });
+      it("passes the stop the browser went into", function(done) {
+        var callback;
+        callback = function(into) {
+          return callback.into = into;
+        };
+        win.R.from('desktop', callback);
+        return resize(1000, function() {
+          return resize(700, done, function() {
+            return callback.into.should.equal("tablet");
+          });
+        });
+      });
+      return it("throws an error when the callback isn't a function", function() {
+        (function() {
+          return win.R.from("desktop", "wat");
+        }).should["throw"]();
+        return (function() {
+          return win.R.from("desktop");
+        }).should["throw"]();
+      });
+    });
+    return context(".into('stop', fn callback(into))", function() {
+      before(function() {
+        return win.R.stops({
+          desktop: '(min-width: 980px)',
+          tablet: '(min-width: 480px) and (max-width: 979px)',
+          mobile: '(max-width: 480px)'
+        });
+      });
+      it("triggers a callback when the browser changes into of a specified stop", function(done) {
+        var callback;
+        callback = function() {
+          return callback.executed = true;
+        };
+        win.R.into('tablet', callback);
+        return resize(1000, function() {
+          return resize(700, done, function() {
+            return callback.executed.should.equal(true);
+          });
+        });
+      });
+      it("passes the stop the browser came from", function(done) {
+        var callback;
+        callback = function(from) {
+          return callback.from = from;
+        };
+        win.R.into('tablet', callback);
+        return resize(1000, function() {
+          return resize(700, done, function() {
+            return callback.from.should.equal("desktop");
+          });
+        });
+      });
+      return it("throws an error when the callback isn't a function", function() {
+        (function() {
+          return win.R.into("desktop", "wat");
+        }).should["throw"]();
+        return (function() {
+          return win.R.into("desktop");
         }).should["throw"]();
       });
     });

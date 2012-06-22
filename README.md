@@ -19,6 +19,9 @@
 	R.change (into, from) ->
 		console.log "I am a function that executes when the browser goes from desktop into #{into}"	
 
+	R.from("desktop").into("tablet").into("mobile").exec ->
+		console.log "I just came from desktop then tablet and now I'm in mobile"
+
 
 	$('.logo').click 
 		R.when ['mobile','tablet'], ->
